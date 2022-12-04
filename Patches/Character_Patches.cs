@@ -2,20 +2,16 @@
 
 namespace OdinUndercroft.Patches
 {
-    [Harmony]
-    class Character_Patches
+    [HarmonyPatch(typeof(Character), nameof(Character.InInterior))]
+    static class Character_Patches
     {
-        [HarmonyPatch(typeof(Character), "InInterior")]
-        [HarmonyPostfix]
-        static void Character_InInterior(Character __instance, ref bool __result)
+        static void Postfix(Character __instance, ref bool __result)
         {
-            if (Player.m_localPlayer)
+            if (Player.m_localPlayer != null)
             {
-                if (__instance == Player.m_localPlayer)
-                {
-                    if (EnvMan.instance.GetCurrentEnvironment().m_name == "Basement")
-                        __result = false;
-                }
+                if (__instance != Player.m_localPlayer) return;
+                if (EnvMan.instance.GetCurrentEnvironment().m_name == "Basement")
+                    __result = false;
             }
         }
     }
