@@ -1,8 +1,10 @@
-﻿using HarmonyLib;
+﻿using System;
+using HarmonyLib;
+using UnityEngine;
 
 namespace OdinUndercroft.Patches
 {
-    [HarmonyPatch(typeof(Character), nameof(Character.InInterior))]
+    [HarmonyPatch(typeof(Character), nameof(Character.InInterior), typeof(Transform))]
     static class Character_Patches
     {
         static void Postfix(Character __instance, ref bool __result)
