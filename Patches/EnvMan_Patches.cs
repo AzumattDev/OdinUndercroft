@@ -4,12 +4,10 @@ using UnityEngine;
 
 namespace OdinUndercroft.Patches
 {
-    [Harmony]
-    class EnvMan_Patches
+    [HarmonyPatch(typeof(EnvMan), nameof(EnvMan.Awake))]
+    static class EnvMan_Patches
     {
-        [HarmonyPatch(typeof(EnvMan), "Awake")]
-        [HarmonyPostfix]
-        public static void EnvMan_Awake()
+        static void Postfix(EnvMan __instance)
         {
             EnvSetup basementEnv = EnvMan.instance.m_environments.Find(x => x.m_name == "Crypt").Clone();
             basementEnv.m_name = "Basement";

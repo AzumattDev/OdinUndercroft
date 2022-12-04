@@ -40,11 +40,12 @@ namespace OdinUndercroft
         public bool CanBeRemoved()
         {
             var ol = Physics.OverlapBox(interiorBounds.center, interiorBounds.extents).Where(x => !localColliders.Contains(x));
-            foreach (var item in ol)
+            IEnumerable<Collider> enumerable = ol.ToList();
+            foreach (var item in enumerable)
             {
                 Debug.Log(item.name + " is preventing basement from being destroyed");
             }
-            return !ol.Any();
+            return !enumerable.Any();
         }
     }
 }

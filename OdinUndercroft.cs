@@ -1,33 +1,41 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
+using System.Reflection;
 using BepInEx;
 using BepInEx.Configuration;
+using BepInEx.Logging;
 using HarmonyLib;
+using JetBrains.Annotations;
 using PieceManager;
 using ServerSync;
+using UnityEngine;
 
 namespace OdinUndercroft
 {
-    [BepInPlugin(HGUIDLower, ModName, version)]
+    [BepInPlugin(ModGUID, ModName, ModVersion)]
     public class OdinUndercroftPlugin : BaseUnityPlugin
     {
-        public const string version = "1.1.11";
+        public const string ModVersion = "1.1.11";
         public const string ModName = "OdinsUndercroft";
         internal const string Author = "Gravebear";
-        internal const string HGUID = Author + "." + "OdinsUndercroft";
-        internal const string HGUIDLower = "gravebear.odinsundercroft";
-        private const string HarmonyGUID = "Harmony." + Author + "." + ModName;
-        private static string ConfigFileName = HGUIDLower + ".cfg";
-        private static string ConfigFileFullPath = Paths.ConfigPath + Path.DirectorySeparatorChar + ConfigFileName;
+        private const string ModGUID = "gravebear.odinsundercroft";
+        private static string _configFileName = ModGUID + ".cfg";
+        private static string _configFileFullPath = Paths.ConfigPath + Path.DirectorySeparatorChar + _configFileName;
         public static string ConnectionError = "";
+        private readonly Harmony _harmony = new(ModGUID);
 
-        internal static ConfigEntry<int>? MaxNestedLimit;
+        public static readonly ManualLogSource OdinUndercroftPluginLogger =
+            BepInEx.Logging.Logger.CreateLogSource(ModName);
 
-
-        //harmony
-        private static Harmony? harmony;
+        internal static ConfigEntry<int> MaxNestedLimit = null!;
 
         private void Awake()
         {
+            // Bind configs
+            MaxNestedLimit = config("General", "Max nested basements", 1,
+                "The maximum number of basements you can incept into each other");
+
+
             BuildPiece OdinsUndercroft = new("odins_undercroft", "OdinsUndercroft");
             OdinsUndercroft.Category.Add(BuildPieceCategory.Misc);
             OdinsUndercroft.Name.English("Odins Undercroft");
@@ -228,13 +236,97 @@ namespace OdinUndercroft
             OH_Undercroft_BuildSkull.RequiredItems.Add("BoneFragments", 1, true);
 
 
-            harmony = new Harmony(HarmonyGUID);
+            Assembly assembly = Assembly.GetExecutingAssembly();
+            _harmony.PatchAll(assembly);
+            SetupWatcher();
+        }
 
-            harmony.PatchAll();
-            MaxNestedLimit = Config.Bind("General", "Max nested basements", 1,
-                "The maximum number of basements you can incept into each other");
+        private void OnDestroy()
+        {
+            Config.Save();
+        }
+
+        private void SetupWatcher()
+        {
+            FileSystemWatcher watcher = new(Paths.ConfigPath, _configFileName);
+            watcher.Changed += ReadConfigValues;
+            watcher.Created += ReadConfigValues;
+            watcher.Renamed += ReadConfigValues;
+            watcher.IncludeSubdirectories = true;
+            watcher.SynchronizingObject = ThreadingHelper.SynchronizingObject;
+            watcher.EnableRaisingEvents = true;
+        }
+
+        private void ReadConfigValues(object sender, FileSystemEventArgs e)
+        {
+            if (!File.Exists(_configFileFullPath)) return;
+            try
+            {
+                OdinUndercroftPluginLogger.LogDebug("ReadConfigValues called");
+                Config.Reload();
+            }
+            catch
+            {
+                OdinUndercroftPluginLogger.LogError($"There was an issue loading your {_configFileName}");
+                OdinUndercroftPluginLogger.LogError("Please check your config entries for spelling and format!");
+            }
         }
 
 
+        #region ServerSync Stuff
+
+        private ConfigEntry<T> config<T>(string group, string name, T value, ConfigDescription description,
+            bool synchronizedSetting = true)
+        {
+            ConfigDescription extendedDescription =
+                new(
+                    description.Description +
+                    (synchronizedSetting ? " [Synced with Server]" : " [Not Synced with Server]"),
+                    description.AcceptableValues, description.Tags);
+            ConfigEntry<T> configEntry = Config.Bind(group, name, value, extendedDescription);
+            //var configEntry = Config.Bind(group, name, value, description);
+
+            SyncedConfigEntry<T> syncedConfigEntry = ConfigSync.AddConfigEntry(configEntry);
+            syncedConfigEntry.SynchronizedConfig = synchronizedSetting;
+
+            return configEntry;
+        }
+
+        private ConfigEntry<T> config<T>(string group, string name, T value, string description,
+            bool synchronizedSetting = true)
+        {
+            return config(group, name, value, new ConfigDescription(description), synchronizedSetting);
+        }
+
+        internal ConfigEntry<T> TextEntryConfig<T>(string group, string name, T value, string desc,
+            bool synchronizedSetting = true)
+        {
+            ConfigurationManagerAttributes attributes = new()
+            {
+                CustomDrawer = TextAreaDrawer
+            };
+            return config(group, name, value, new ConfigDescription(desc, null, attributes), synchronizedSetting);
+        }
+
+        private class ConfigurationManagerAttributes
+        {
+            [UsedImplicitly] public int? Order;
+            [UsedImplicitly] public bool? Browsable;
+            [UsedImplicitly] public string? Category;
+            [UsedImplicitly] public Action<ConfigEntryBase>? CustomDrawer;
+        }
+
+        internal static void TextAreaDrawer(ConfigEntryBase entry)
+        {
+            GUILayout.ExpandHeight(true);
+            GUILayout.ExpandWidth(true);
+            entry.BoxedValue = GUILayout.TextArea((string)entry.BoxedValue, GUILayout.ExpandWidth(true),
+                GUILayout.ExpandHeight(true));
+        }
+        
+        private static readonly ConfigSync ConfigSync = new(ModGUID)
+            { DisplayName = ModName, CurrentVersion = ModVersion, MinimumRequiredVersion = ModVersion };
+
+        #endregion
     }
 }

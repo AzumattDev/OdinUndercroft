@@ -1,12 +1,11 @@
 ﻿using HarmonyLib;
+
 namespace OdinUndercroft.Patches
 {
-    [Harmony]
-    class Piece_Patches
+    [HarmonyPatch(typeof(Piece), nameof(Piece.CanBeRemoved))]
+    static class Piece_Patches
     {
-        [HarmonyPatch(typeof(Piece), "CanBeRemoved")]
-        [HarmonyPostfix]
-        public static void Piece_CanBeRemoved(Piece __instance, ref bool __result)
+        static void Postfix(Piece __instance, ref bool __result)
         {
             var basement = __instance.GetComponent<Basement>();
             if (basement)

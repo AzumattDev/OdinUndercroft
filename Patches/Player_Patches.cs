@@ -87,25 +87,23 @@ namespace OdinUndercroft.Patches
     }
 }
 */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Reflection.Emit;
-
 using HarmonyLib;
 using UnityEngine;
 
 namespace OdinUndercroft.Patches
 {
-    [Harmony]
-    static class Player_Patches
+    [HarmonyPatch(typeof(Player), nameof(Player.UpdatePlacementGhost))]
+    static class Player_UpdatePlacementGhost_Patch
     {
         const float overlapRadius = 60;
 
-        [HarmonyPatch(typeof(Player), "UpdatePlacementGhost")]
-        [HarmonyPostfix]
-        public static void Player_UpdatePlacementGhost(Player __instance, GameObject ___m_placementGhost)
+        static void Postfix(Player __instance, GameObject ___m_placementGhost)
         {
             if (!___m_placementGhost) return;
             var basementComponent = ___m_placementGhost.GetComponent<Basement>();
@@ -113,16 +111,18 @@ namespace OdinUndercroft.Patches
             if (Basement.allBasements.Count <= 0) return;
             Type type = typeof(Player).Assembly.GetType("Player+PlacementStatus");
             object moreSpace = type.GetField("MoreSpace").GetValue(__instance);
-            FieldInfo statusField = __instance.GetType().GetField("m_placementStatus", BindingFlags.NonPublic | BindingFlags.Instance);
-            var ol = Basement.allBasements.Where(x => Vector3.Distance(x.transform.position, ___m_placementGhost.transform.position) < overlapRadius).Where(x => x.gameObject != ___m_placementGhost);
-            if (ol.Any(x => x.GetComponentInParent<Basement>()) || ___m_placementGhost.transform.position.y > 2500 * Mathf.Max(OdinUndercroftPlugin.MaxNestedLimit.Value, 0) + 2000)
+            FieldInfo statusField = __instance.GetType()
+                .GetField("m_placementStatus", BindingFlags.NonPublic | BindingFlags.Instance);
+            var ol = Basement.allBasements
+                .Where(x => Vector3.Distance(x.transform.position, ___m_placementGhost.transform.position) <
+                            overlapRadius).Where(x => x.gameObject != ___m_placementGhost);
+            if (ol.Any(x => x.GetComponentInParent<Basement>()) || ___m_placementGhost.transform.position.y >
+                2500 * Mathf.Max(OdinUndercroftPlugin.MaxNestedLimit.Value, 0) + 2000)
             {
                 statusField.SetValue(__instance, moreSpace);
             }
-
         }
 
-        [HarmonyPatch(typeof(Player), nameof(Player.UpdatePlacementGhost))]
         [HarmonyTranspiler]
         static IEnumerable<CodeInstruction> UpdatePlacementGhostTranspiler(IEnumerable<CodeInstruction> instructions)
         {
