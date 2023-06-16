@@ -130,6 +130,10 @@
     <Content Include="Libs\PieceManager.dll" />
     <Content Include="Libs\ServerSync.dll" />
     <Content Include="LICENSE.txt" />
+    <Content Include="Thunderstore\CHANGELOG.md" />
+    <Content Include="Thunderstore\icon.png" />
+    <Content Include="Thunderstore\manifest.json" />
+    <Content Include="Thunderstore\README.md" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">
