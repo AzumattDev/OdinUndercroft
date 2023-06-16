@@ -11,7 +11,7 @@
     <AssemblyName>OdinUndercroft</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <LangVersion>9</LangVersion>
+    <LangVersion>10</LangVersion>
     <Nullable>enable</Nullable>
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
@@ -76,9 +76,6 @@
       <HintPath>$(GamePath)\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="PieceManager">
-      <HintPath>Libs\PieceManager.dll</HintPath>
-    </Reference>
     <Reference Include="ServerSync">
       <HintPath>Libs\ServerSync.dll</HintPath>
     </Reference>
@@ -118,9 +115,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Basement.cs" />
+    <Compile Include="Libs\PieceManager.cs" />
     <Compile Include="OdinUndercroft.cs" />
     <Compile Include="Patches\Character_Patches.cs" />
     <Compile Include="Patches\EnvMan_Patches.cs" />
+    <Compile Include="Patches\Functions.cs" />
     <Compile Include="Patches\Piece_Patches.cs" />
     <Compile Include="Patches\Player_Patches.cs" />
     <Compile Include="Patches\ZNetScene_Patches.cs" />

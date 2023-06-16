@@ -6,6 +6,7 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 using JetBrains.Annotations;
+using OdinUndercroft.Patches;
 using PieceManager;
 using ServerSync;
 using UnityEngine;
@@ -15,7 +16,7 @@ namespace OdinUndercroft
     [BepInPlugin(ModGUID, ModName, ModVersion)]
     public class OdinUndercroftPlugin : BaseUnityPlugin
     {
-        public const string ModVersion = "1.1.12";
+        public const string ModVersion = "1.1.13";
         public const string ModName = "OdinsUndercroft";
         internal const string Author = "Gravebear";
         private const string ModGUID = "gravebear.odinsundercroft";
@@ -235,6 +236,7 @@ namespace OdinUndercroft
             OH_Undercroft_BuildSkull.Description.English("Sets Build Area for undercroft pieces.");
             OH_Undercroft_BuildSkull.RequiredItems.Add("BoneFragments", 1, true);
 
+            Functions.RegisterAllSFX();
 
             Assembly assembly = Assembly.GetExecutingAssembly();
             _harmony.PatchAll(assembly);
