@@ -1,6 +1,6 @@
 {
     "name": "OdinsUndercroft",
-    "version_number": "1.1.13",
+    "version_number": "1.1.14",
     "website_url": "https://discord.gg/mbkPcvu9ax",
     "description": "A `Basement` alternative, a more castle-like private basement. Now with Deco and BuildKit pieces! Fixed compatibility for ComfyGizmo Mod!",
     "dependencies": [
