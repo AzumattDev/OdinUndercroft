@@ -1238,10 +1238,10 @@ public static class PiecePrefabManager
     {
         GameObject prefab = assets.LoadAsset<GameObject>(prefabName);
 
-        foreach (GameObject gameObject in FixRefs(assets))
+        /*foreach (GameObject gameObject in FixRefs(assets))
         {
             MaterialReplacer.RegisterGameObjectForShaderSwap(gameObject, MaterialReplacer.ShaderType.UseUnityShader);
-        }
+        }*/
 
         if (addToPieceTable)
         {
