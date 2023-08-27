@@ -92,3 +92,7 @@ Updated dependencies
 # Version 1.1.13
 
 Update for Valheim 0.216.9
+
+# Version 1.1.14
+
+Fix for connection bug. 
