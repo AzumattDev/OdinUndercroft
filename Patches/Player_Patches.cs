@@ -158,7 +158,7 @@ namespace OdinUndercroft.Patches
 
         static bool HeightmapIsNullBasemementDelegate(bool isEqual)
         {
-            if (EnvMan.s_instance.GetCurrentEnvironment().m_name == "Basement")
+            if (EnvMan.m_instance.GetCurrentEnvironment().m_name == "Basement")
             {
                 return false;
             }
