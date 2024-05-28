@@ -11,7 +11,9 @@ namespace OdinUndercroft.Patches
         {
             EnvSetup basementEnv = EnvMan.instance.m_environments.Find(x => x.m_name == "Crypt").Clone();
             basementEnv.m_name = "Basement";
-            basementEnv.m_psystems = Array.Empty<GameObject>();
+            basementEnv.m_ambientVol = 0;
+            basementEnv.m_windMax = 0;
+            basementEnv.m_windMin = 0;
             basementEnv.m_rainCloudAlpha = 0;
             basementEnv.m_fogDensityDay = 0;
             basementEnv.m_fogDensityEvening = 0;
