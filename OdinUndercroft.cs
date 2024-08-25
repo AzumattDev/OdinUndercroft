@@ -16,7 +16,7 @@ namespace OdinUndercroft
     [BepInPlugin(ModGUID, ModName, ModVersion)]
     public class OdinUndercroftPlugin : BaseUnityPlugin
     {
-        public const string ModVersion = "1.1.20";
+        public const string ModVersion = "1.1.21";
         public const string ModName = "OdinsUndercroft";
         internal const string Author = "Gravebear";
         private const string ModGUID = "gravebear.odinsundercroft";
@@ -300,6 +300,7 @@ namespace OdinUndercroft
             return config(group, name, value, new ConfigDescription(description), synchronizedSetting);
         }
 
+        /*
         internal ConfigEntry<T> TextEntryConfig<T>(string group, string name, T value, string desc,
             bool synchronizedSetting = true)
         {
@@ -312,12 +313,12 @@ namespace OdinUndercroft
 
         private class ConfigurationManagerAttributes
         {
-            [UsedImplicitly] public int? Order;
-            [UsedImplicitly] public bool? Browsable;
-            [UsedImplicitly] public string? Category;
-            [UsedImplicitly] public Action<ConfigEntryBase>? CustomDrawer;
+            [UsedImplicitly] public int? Order = null!;
+            [UsedImplicitly] public bool? Browsable = null!;
+            [UsedImplicitly] public string? Category = null!;
+            [UsedImplicitly] public Action<ConfigEntryBase>? CustomDrawer = null!;
         }
-
+        */
         internal static void TextAreaDrawer(ConfigEntryBase entry)
         {
             GUILayout.ExpandHeight(true);
